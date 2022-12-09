@@ -113,9 +113,15 @@ jobs:
             # This is an awesome plugin that allows us to extract a package.xml with the metadata
             # that has changed between commits. I highly recommend going over the github readme 
             # for more information on how this works.
-
+            
+            # Update SFDX CLI
+            - name: 'Update SFDX'
+              if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
+              run: |
+                echo "$HOME/sfdx/bin" >> $GITHUB_PATH
+                ~/sfdx/bin/sfdx version
+            
             - name: 'Installing sfdx git delta'
-              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: | 
                   echo y | sfdx plugins:install sfdx-git-delta
                   sfdx plugins 
@@ -128,17 +134,7 @@ jobs:
 
             # Install SFDX scanner
             - name: 'Installing SFDX scanner'
-              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: sfdx plugins:install @salesforce/sfdx-scanner
-            
-            # Update SFDX CLI
-            - name: 'Update SFDX'
-              if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
-              run: |
-                echo "$HOME/sfdx/bin" >> $GITHUB_PATH
-                ~/sfdx/bin/sfdx version
-                ~/sfdx/bin/sfdx plugins:link ~/sfdx
-                ~/sfdx/bin/sfdx plugins
               
             # Prior to setting up this workflow, you have to create a Github Secret
             # that contains the sfdx url of the integration/qa org.
