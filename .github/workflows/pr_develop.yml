@@ -88,15 +88,7 @@ jobs:
                     TESTS=$(cat testsToRun.txt)       
                     echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
         
-            # Store SFDX CLI in Cache
-            - name: Cache SFDX CLI packages
-              id: cache-sfdx
-              uses: actions/cache@v3
-              env:
-                cache-name: cache-sfdx-cli-modules
-              with:
-                path: ~/sfdx
-                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/sfdx-project.json') }}
+           
             
             # Now Install Salesforce CLI
             - name: 'Install Salesforce CLI'
