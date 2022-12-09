@@ -5,19 +5,18 @@ name: Validate PR on develop branch
 on:
     # The workflow will run whenever an event happens on a pull request
     pull_request:
-      # The events are that a PR is opened, or when a commit is pushed
-      # to a branch that has an existing pull request
-      types: [opened, synchronize]
-      # The branches filter allows to specify that this workflow should only
-      # run if the branch name is "develop". This way we prevent this workflow
-      # from running when PRs are opened on other branches
-      branches: [ develop ]
-      # We only care about changes to the force-app directory, which is the
-      # root directory of the sfdx project. This prevents the job from running
-      # when changing non-salesforce files (like this yml file).
-      paths:
-        - 'force-app/**'
-            
+        # The events are that a PR is opened, or when a commit is pushed
+        # to a branch that has an existing pull request
+        types: [opened, synchronize]
+        # The branches filter allows to specify that this workflow should only
+        # run if the branch name is "develop". This way we prevent this workflow
+        # from running when PRs are opened on other branches
+        branches: [ develop ]
+        # We only care about changes to the force-app directory, which is the
+        # root directory of the sfdx project. This prevents the job from running
+        # when changing non-salesforce files (like this yml file).
+        paths:
+            - 'force-app/**'
 
 # Jobs to be executed when the above conditions are met
 jobs:
@@ -73,24 +72,35 @@ jobs:
                 # we put the body of the pull request in an env variable (only available to this step)
                 PR_BODY: ${{github.event.pull_request.body}}
 
-              # Here we print the content of the environment variable and
-              # pipe to a a text file.
+                # Here we print the content of the environment variable and
+                # pipe to a a text file.
 
-              # Then we call the local script parsePR.js, which will create
-              # a new file called testsToRun.txt. This file will have the list
-              # of tests to run separated by a comma
+                # Then we call the local script parsePR.js, which will create
+                # a new file called testsToRun.txt. This file will have the list
+                # of tests to run separated by a comma
 
-              # Finally, we add the list of tests to the $GITHUB_ENV variable
-              # as this allows us to reference the list in a subsequent step.  If you
-              # were using a normal env variable, its value would not be available outside this step.
-              run: |
-                  echo $PR_BODY > ./pr_body.txt
-                  node ./parsePR.js              
-                  TESTS=$(cat testsToRun.txt)       
-                  echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
-                  
+                # Finally, we add the list of tests to the $GITHUB_ENV variable
+                # as this allows us to reference the list in a subsequent step.  If you
+                # were using a normal env variable, its value would not be available outside this step.
+                run: |
+                    echo $PR_BODY > ./pr_body.txt
+                    node ./parsePR.js              
+                    TESTS=$(cat testsToRun.txt)       
+                    echo "APEX_TESTS=$TESTS" >> $GITHUB_ENV
+        
+            # Store SFDX CLI in Cache
+            - name: Cache SFDX CLI packages
+              id: cache-sfdx
+              uses: actions/cache@v3
+              env:
+                cache-name: cache-sfdx-cli-modules
+              with:
+                path: ~/sfdx
+                key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/sfdx-project.json') }}
+            
             # Now Install Salesforce CLI
             - name: 'Install Salesforce CLI'
+              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: |
                   wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
                   mkdir ~/sfdx
@@ -104,6 +114,7 @@ jobs:
             # for more information on how this works.
 
             - name: 'Installing sfdx git delta'
+              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: | 
                   echo y | sfdx plugins:install sfdx-git-delta
                   sfdx plugins 
@@ -116,8 +127,14 @@ jobs:
 
             # Install SFDX scanner
             - name: 'Installing SFDX scanner'
+              if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: sfdx plugins:install @salesforce/sfdx-scanner
-
+          
+            # Update SFDX CLI
+            - name: 'Update SFDX'
+              if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
+              run: sfdx update
+              
             # Prior to setting up this workflow, you have to create a Github Secret
             # that contains the sfdx url of the integration/qa org.
 
