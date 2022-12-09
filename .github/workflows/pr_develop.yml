@@ -100,7 +100,6 @@ jobs:
             
             # Now Install Salesforce CLI
             - name: 'Install Salesforce CLI'
-              #if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: |
                   wget https://developer.salesforce.com/media/salesforce-cli/sfdx/channels/stable/sfdx-linux-x64.tar.xz
                   mkdir ~/sfdx
@@ -114,7 +113,6 @@ jobs:
             # for more information on how this works.
 
             - name: 'Installing sfdx git delta'
-              #if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: | 
                   echo y | sfdx plugins:install sfdx-git-delta
                   sfdx plugins 
@@ -127,12 +125,10 @@ jobs:
 
             # Install SFDX scanner
             - name: 'Installing SFDX scanner'
-              #if: ${{ steps.cache-sfdx.outputs.cache-hit != 'true' }}
               run: sfdx plugins:install @salesforce/sfdx-scanner
           
             # Update SFDX CLI
             - name: 'Update SFDX'
-              #if: ${{ steps.cache-sfdx.outputs.cache-hit == 'true' }}
               run: sfdx update
               
             # Prior to setting up this workflow, you have to create a Github Secret
