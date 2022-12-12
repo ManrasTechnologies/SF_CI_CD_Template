@@ -150,7 +150,7 @@ jobs:
             # If the env variable equals all, we run all tests
             - name: 'deploy delta changes - run all tests'
               run: |
-                  sfdx force:source:deploy -x changed-sources/package/package.xml --postdestructivechanges changed-sources/destructiveChanges/destructiveChanges.xml --testlevel NoTestRun --json --checkonly
+                  sfdx force:source:deploy -x changed-sources/package/package.xml --postdestructivechanges changed-sources/destructiveChanges/destructiveChanges.xml --testlevel NoTestRun --json
 
            # - name: 'Deploy destructive changes (if any)'
             #  run: sfdx force:mdapi:deploy -d "changed-sources/destructiveChanges" --checkonly --ignorewarnings 
