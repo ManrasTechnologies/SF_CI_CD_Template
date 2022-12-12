@@ -191,9 +191,4 @@ jobs:
             - name: 'Check-only deploy delta changes - run all tests'
               if: ${{ env.APEX_TESTS == 'all' }}
               run: |
-                  sfdx force:source:deploy -x changed-sources/package/package.xml --postdestructivechanges changed-sources/destructiveChanges/destructiveChanges.xml --checkonly --testlevel NoTestRun --json > deployResult.json
-
-            - uses: actions/upload-artifact@v3
-              with:
-                name: deployment-result
-                path: deployResult.json
+                  sfdx force:source:deploy -x changed-sources/package/package.xml --postdestructivechanges changed-sources/destructiveChanges/destructiveChanges.xml --checkonly --json
