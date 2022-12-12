@@ -124,13 +124,7 @@ jobs:
             - name: 'Installing sfdx git delta'
               run: | 
                   echo y | sfdx plugins:install sfdx-git-delta
-                  sfdx plugins 
-
-            # Install java as it is required for the next step
-            - name: 'Installing java'
-              run: |
-                sudo apt-get update
-                sudo apt install default-jdk
+                  sfdx plugins
 
             # Install SFDX scanner
             # - name: 'Installing SFDX scanner'
