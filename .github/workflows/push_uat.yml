@@ -63,7 +63,12 @@ jobs:
               run: |
                 echo "$HOME/sfdx/bin" >> $GITHUB_PATH
                 ~/sfdx/bin/sfdx version
-              
+            
+            #Download Artifact
+            - uses: actions/download-artifact@v2
+              with:
+                name: deployment-result
+            
             # Prior to setting up this workflow, you have to create a Github Secret
             # that contains the sfdx url of the integration/qa org.
 
