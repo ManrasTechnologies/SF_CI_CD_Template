@@ -77,7 +77,7 @@ jobs:
                 ~/sfdx/bin/sfdx version
             
             #Download Artifact
-            - uses: actions/download-artifact@v2
+            - uses: actions/download-artifact@v3
               with:
                 name: deployment-result
             

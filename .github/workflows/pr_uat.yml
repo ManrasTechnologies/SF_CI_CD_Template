@@ -193,7 +193,7 @@ jobs:
               run: |
                   sfdx force:source:deploy -x changed-sources/package/package.xml --postdestructivechanges changed-sources/destructiveChanges/destructiveChanges.xml --checkonly --testlevel NoTestRun --json > deployResult.json
 
-            - uses: actions/upload-artifact@v2
+            - uses: actions/upload-artifact@v3
               with:
                 name: deployment-result
                 path: deployResult.json
